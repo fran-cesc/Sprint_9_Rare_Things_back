@@ -15,6 +15,9 @@ app.use(express.urlencoded({extended: true, limit: '5mb'}));
 app.use(require('./routes/users'));
 app.use(require('./routes/things'));
 
+// Image static server
+app.use(express.static('img_uploads'));
+
 // Initialize server
 app.listen(process.env.PORT || 3000,() => {
     console.log(`Server running at port ${process.env.PORT}`);

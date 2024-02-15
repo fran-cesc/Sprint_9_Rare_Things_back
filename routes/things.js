@@ -11,6 +11,33 @@ const upload = multer({ dest: "img_uploads/" });
 // Database connection
 const {connection} = require("../config/config.db");
 
+// Image static server
+// app.use(express.static('img_uploads'));
+
+// Get thing
+
+const getThing = (request, response) => {
+  const id = request.params.id;
+  connection.query(
+    "SELECT * from things where id = ?",
+    [id],
+    (error, results) => {
+        if (error) {        
+            return response.status(500).json({ error: " Server Error. Could not retrieve thing" });
+        }
+        if (results.length === 0) { 
+          return response.status(404).json({ error: "Thing not found" });
+        }
+        response
+        .status(200)
+        .json(results[0]);
+    }
+  );
+}
+
+// Route
+app.route("/things/:id").get(getThing);
+
 // Get all things
 const getAllThings = (request, response) => {
   connection.query("SELECT * FROM things", (error, results) => {
