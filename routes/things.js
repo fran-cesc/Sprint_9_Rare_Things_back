@@ -54,12 +54,12 @@ app.route("/things").get(getAllThings);
 
 // Post a thing
 const postThing = (request, response) => {
-  const { user_name, thing_title, description} = request.body;
+  const { user_name, thing_title, location, category} = request.body;
   const imgPath = saveImage(request.file);
   const imgName = request.file.originalname;
   connection.query(
-    "INSERT INTO things(user_name, img_name, thing_title, description) VALUES (?,?,?,?)",
-    [user_name, imgName, thing_title, description],
+    "INSERT INTO things(user_name, img_name, thing_title, location, category) VALUES (?,?,?,?,?)",
+    [user_name, imgName, thing_title, location, category],
     (error, results) => {
       if (error) {
         return response.status(500).json({ error: "Internal Server Error" });
@@ -100,14 +100,5 @@ const delThing = (request, response) => {
 // Route
 app.route("/things/:id").delete(delThing);
 
-// // Get images
-
-// exports.getfile = function (req, res){
-//   res.download("./things/img_uploads" + req.params.path);
-// }; 
-
-// // Route
-
-// app.get("/things/img_uploads/:path", getfile);
 
 module.exports = app;
