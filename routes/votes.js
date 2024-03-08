@@ -10,7 +10,9 @@ const {connection} = require("../config/config.db");
 
 // Verify if an user has voted a thing
 const getVoted = (request, response) => {
-    const { user_id, thing_id } = request.query;
+    
+  const { user_id, thing_id } = request.query;
+
     connection.query(
       "SELECT COUNT(*) AS count FROM votes WHERE user_id = ? AND thing_id = ?",
       [user_id, thing_id],
