@@ -8,6 +8,8 @@ dotenv.config();
 // Database connection
 const {connection} = require("../config/config.db");
 
+//TODO encrypt passwords
+
 // Get all users
 const getAllUsers = (request, response) => {
   connection.query("SELECT * FROM users", (error, results) => {
@@ -24,7 +26,6 @@ app.route("/users").get(getAllUsers);
 // Get user
 const getUser = (request, response) => {
   const email = request.params.email;
-  console.log(email);
   connection.query(
     "SELECT * from users WHERE email = ?",
     [email],
@@ -59,8 +60,7 @@ const registerUser = (request, response) => {
       }
       return response
         .status(201)
-        .json({ message: "User registered successfully"});
-        // .json({ message: "User registered successfully", userId: results.insertId, user_name: results.user_name });
+        .json({ message: "User registered successfully", userId: results.insertId});
     }
   );
 };
@@ -70,7 +70,7 @@ app.route("/register").post(registerUser);
 
 // User login
 const logUser = (request, response) => {
-  const { email, password, user_name } = request.body;
+  const { email, password } = request.body;
   connection.query(
     "SELECT user_name, email, password from users where email=?",
     [email],

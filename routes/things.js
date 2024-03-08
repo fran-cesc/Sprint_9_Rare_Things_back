@@ -11,15 +11,12 @@ const upload = multer({ dest: "img_uploads/" });
 // Database connection
 const {connection} = require("../config/config.db");
 
-// Image static server
-// app.use(express.static('img_uploads'));
-
 // Get thing
 
 const getThing = (request, response) => {
   const id = request.params.id;
   connection.query(
-    "SELECT * from things where id = ?",
+    "SELECT * from things where thing_id = ?",
     [id],
     (error, results) => {
         if (error) {        
@@ -57,6 +54,7 @@ const postThing = (request, response) => {
   const { user_name, thing_title, location, category} = request.body;
   const imgPath = saveImage(request.file);
   const imgName = request.file.originalname;
+
   connection.query(
     "INSERT INTO things(user_name, img_name, thing_title, location, category) VALUES (?,?,?,?,?)",
     [user_name, imgName, thing_title, location, category],
@@ -81,24 +79,45 @@ function saveImage(file) {
 app.route("/things").post(upload.single("image"), postThing);
 
 // Delete thing
-const delThing = (request, response) => {
-  const id = request.params.id;
-  connection.query(
-    "Delete from things where id = ?",
-    [id],
-    (error, results) => {
-        if (error) {        
-            return response.status(500).json({ error: " Server Error. Could not delete thing" });
-        }
-        response
-        .status(201)
-        .json({ "Thing removed successfully": results.affectedRows });
-    }
-  );
-};
+// const delThing = (request, response) => {
+//   const id = request.params.id;
+//   connection.query(
+//     "Delete from things where id = ?",
+//     [id],
+//     (error, results) => {
+//         if (error) {        
+//             return response.status(500).json({ error: " Server Error. Could not delete thing" });
+//         }
+//         response
+//         .status(201)
+//         .json({ "Thing removed successfully": results.affectedRows });
+//     }
+//   );
+// };
 
 // Route
-app.route("/things/:id").delete(delThing);
+// app.route("/things/:id").delete(delThing);
 
+
+// Update votes
+
+const updateVotes = (request, response) => {
+  const { thing_id, votevalue } = request.body;
+  connection.query(
+    "UPDATE things SET votes = votes + ? WHERE thing_id = ?",
+    [votevalue, thing_id],
+    (error, results) => {
+        if (error) {        
+            return response.status(500).json({ error: " Server Error. Could not update votes" });
+        }
+        response
+        .status(200)
+        .json({ "Votes updated successfuly": results.affectedRows });
+    }
+  );
+}
+
+// Route
+app.route("/things/updatevotes").post(updateVotes);
 
 module.exports = app;
