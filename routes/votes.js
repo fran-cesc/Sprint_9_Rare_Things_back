@@ -7,6 +7,31 @@ dotenv.config();
 // Database connection
 const {connection} = require("../config/config.db");
 
+// Register vote
+
+const registerVote = (request, response) => {
+  const { user_id, thing_id } = request.body;
+  connection.query(
+    "INSERT INTO votes (user_id, thing_id) VALUES (?,?)",
+    [user_id, thing_id],
+    (error, results) => {
+      if (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+          return response.status(400).json({ error: "User has already voted for this thing" });
+        } else {
+          console.error("Error registering vote:", error);
+          return response.status(500).json({ error: "Server Error. Vote could not be registered" });
+        }
+      }      return response
+        .status(201)
+        .json({ message: "Vote registered successfully", results});
+    }
+  );
+};
+
+// Route
+app.route("/vote").post(registerVote);
+
 
 // Verify if an user has voted a thing
 const getVoted = (request, response) => {
