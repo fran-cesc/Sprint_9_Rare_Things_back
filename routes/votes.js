@@ -22,7 +22,8 @@ const registerVote = (request, response) => {
           console.error("Error registering vote:", error);
           return response.status(500).json({ error: "Server Error. Vote could not be registered" });
         }
-      }      return response
+      }     
+      return response
         .status(201)
         .json({ message: "Vote registered successfully", results});
     }
