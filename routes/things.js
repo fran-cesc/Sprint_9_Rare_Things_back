@@ -35,6 +35,7 @@ const getThing = (request, response) => {
 // Route
 app.route("/things/:id").get(getThing);
 
+
 // Get all things
 const getAllThings = (request, response) => {
   connection.query("SELECT * FROM things", (error, results) => {
@@ -52,7 +53,7 @@ app.route("/things").get(getAllThings);
 // Post a thing
 const postThing = (request, response) => {
   const { user_name, thing_title, location, category} = request.body;
-  const imgPath = saveImage(request.file);
+  saveImage(request.file);
   const imgName = request.file.originalname;
 
   connection.query(
@@ -100,7 +101,6 @@ app.route("/things").post(upload.single("image"), postThing);
 
 
 // Update votes
-
 const updateVotes = (request, response) => {
   const { thing_id, votevalue } = request.body;
   connection.query(
