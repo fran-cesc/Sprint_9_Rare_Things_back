@@ -47,7 +47,7 @@ const getVoted = (request, response) => {
           }
          
           const hasVoted = results[0].count > 0;
-          response.json({hasVoted});
+          response.json(hasVoted);
       }
     );
   }

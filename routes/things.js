@@ -113,6 +113,7 @@ const updateVotes = (request, response) => {
         response
         .status(200)
         .json({ "Votes updated successfuly": results.affectedRows });
+
     }
   );
 }
