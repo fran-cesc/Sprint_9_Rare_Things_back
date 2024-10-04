@@ -15,6 +15,7 @@ app.use(express.urlencoded({extended: true, limit: '5mb'}));
 app.use(require('./routes/users'));
 app.use(require('./routes/things'));
 app.use(require('./routes/votes'));
+app.use(require('./routes/comments'));
 
 // Image static server
 app.use(express.static('img_uploads'));

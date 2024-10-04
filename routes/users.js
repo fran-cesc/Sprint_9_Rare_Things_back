@@ -23,7 +23,7 @@ const getAllUsers = (request, response) => {
 // Route
 app.route("/users").get(getAllUsers);
 
-// Get user
+// Get user by user_mail
 const getUser = (request, response) => {
   const email = request.params.email;
   connection.query(

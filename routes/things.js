@@ -11,8 +11,8 @@ const upload = multer({ dest: "img_uploads/" });
 // Database connection
 const {connection} = require("../config/config.db");
 
-// Get thing
 
+// Get thing
 const getThing = (request, response) => {
   const id = request.params.id;
   connection.query(
