@@ -34,7 +34,7 @@ app.route("/comments").post(registerComment);
 const getCommentsByThingId = (request, response) => {
     const id = request.params.id;
     connection.query(
-      "SELECT * from comments WHERE thing_id = ?",
+      "SELECT comments.*, users.user_name FROM comments JOIN users ON comments.user_id = users.user_id WHERE thing_id = ? ORDER BY comments.date DESC",
       [id],
       (error, results) => {
           if (error) {        
