@@ -23,8 +23,9 @@ const getAllUsers = (request, response) => {
 // Route
 app.route("/users").get(getAllUsers);
 
+
 // Get user by user_mail
-const getUser = (request, response) => {
+const getUserByMail = (request, response) => {
   const email = request.params.email;
   connection.query(
     "SELECT * from users WHERE email = ?",
@@ -34,8 +35,10 @@ const getUser = (request, response) => {
             return response.status(500).json({ error: " Server Error. Could not retrieve user" });
         }
         if (results.length === 0) { 
-          console.log(results);
-          return response.status(200).json(results);
+          console.log('No user found for email:', email);
+          return response.status(404)
+          .setHeader('Content-Type', 'application/json')
+          .json({message: 'User not found'});
         }
         return response
         .status(200)
@@ -45,7 +48,35 @@ const getUser = (request, response) => {
 }
 
 // Route
-app.route("/users/:email").get(getUser);
+app.route("/users/email/:email").get(getUserByMail);
+
+
+// Get user by user_id
+const getUserById = (request, response) => {
+
+  const user_id = request.params.id;
+
+  connection.query(
+    "SELECT * from users WHERE user_id = ?",
+    [user_id],
+    (error, results) => {
+        if (error) {   
+            return response.status(500).json({ error: " Server Error. Could not retrieve user" });
+        }
+        if (results.length === 0) { 
+          return response.status(404)
+          .json({message: 'User not found'});
+        }
+        console.log('User found:', results[0]);
+        return response
+        .status(200)
+        .json(results[0]);
+    }
+  );
+}
+
+// Route
+app.route("/users/id/:id").get(getUserById);
 
 
 // Register user
