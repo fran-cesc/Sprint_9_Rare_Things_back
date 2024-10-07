@@ -12,8 +12,8 @@ const upload = multer({ dest: "img_uploads/" });
 const {connection} = require("../config/config.db");
 
 
-// Get thing
-const getThing = (request, response) => {
+// Get thing by Id
+const getThingById = (request, response) => {
   const id = request.params.id;
   connection.query(
     "SELECT * from things where thing_id = ?",
@@ -33,7 +33,32 @@ const getThing = (request, response) => {
 }
 
 // Route
-app.route("/things/:id").get(getThing);
+app.route("/things/:id").get(getThingById);
+
+
+// Get all things from a user by user_id
+
+const getAllThingsFromUser = (request, response) => {
+  const id = request.params.id;
+  connection.query(
+    "SELECT * from things where user_id = ?",
+    [id],
+    (error, results) => {
+        if (error) {        
+            return response.status(500).json({ error: " Server Error. Could not retrieve thing" });
+        }
+        if (results.length === 0) { 
+          return response.status(404).json({ error: "Thing not found" });
+        }
+        response
+        .status(200)
+        .json(results);
+    }
+  );
+}
+
+// Route
+app.route("/things/user/:id").get(getAllThingsFromUser);
 
 
 // Get all things
@@ -52,13 +77,12 @@ app.route("/things").get(getAllThings);
 
 // Post a thing
 const postThing = (request, response) => {
-  const { user_name, thing_title, location, category} = request.body;
+  const { user_id, user_name, thing_title, location, category} = request.body;
   saveImage(request.file);
   const imgName = request.file.originalname;
-
   connection.query(
-    "INSERT INTO things(user_name, img_name, thing_title, location, category) VALUES (?,?,?,?,?)",
-    [user_name, imgName, thing_title, location, category],
+    "INSERT INTO things(user_id, user_name, img_name, thing_title, location, category) VALUES (?,?,?,?,?,?)",
+    [user_id, user_name, imgName, thing_title, location, category],
     (error, results) => {
       if (error) {
         return response.status(500).json({ error: "Internal Server Error" });
