@@ -10,10 +10,10 @@ const {connection} = require("../config/config.db");
 // Register vote
 
 const registerVote = (request, response) => {
-  const { user_id, thing_id } = request.body;
+  const { user_id, thing_id, vote_value } = request.body;
   connection.query(
-    "INSERT INTO votes (user_id, thing_id) VALUES (?,?)",
-    [user_id, thing_id],
+    "INSERT INTO votes (user_id, thing_id, value) VALUES (?,?,?)",
+    [user_id, thing_id, vote_value],
     (error, results) => {
       if (error) {
         if (error.code === 'ER_DUP_ENTRY') {
@@ -21,10 +21,10 @@ const registerVote = (request, response) => {
         } else {
           console.error("Error registering vote:", error);
           return response.status(500).json({ error: "Server Error. Vote could not be registered" });
-        }
-      }      return response
-        .status(201)
-        .json({ message: "Vote registered successfully", results});
+          }
+      }  else return response
+              .status(201)
+              .json({ message: "Vote registered successfully", results});
     }
   );
 };
@@ -33,24 +33,23 @@ const registerVote = (request, response) => {
 app.route("/vote").post(registerVote);
 
 
-// Verify if an user has voted a thing
+// Verify if an user has voted a thing and return the value voted
 const getVoted = (request, response) => {
     
   const { user_id, thing_id } = request.query;
 
-    connection.query(
-      "SELECT COUNT(*) AS count FROM votes WHERE user_id = ? AND thing_id = ?",
-      [user_id, thing_id],
-      (error, results) => {
-          if (error) {        
-              return response.status(500).json({ error: " Server Error. Could not retrieve if user has voted" });
-          }
-         
-          const hasVoted = results[0].count > 0;
-          response.json(hasVoted);
-      }
-    );
-  }
+  connection.query(
+    "SELECT COALESCE(value_voted, 0) AS value_voted FROM votes WHERE user_id = ? AND thing_id = ?",
+    [user_id, thing_id],
+    (error, results) => {
+        if (error) {        
+            return response.status(500).json({ error: " Server Error. Could not retrieve if user has voted" });
+        }
+        const valueVoted = results[0] ? results[0].value_voted : 0;
+        response.json(valueVoted);
+    }
+  );
+}
   
   // Route
   app.route("/hasvoted").get(getVoted);
