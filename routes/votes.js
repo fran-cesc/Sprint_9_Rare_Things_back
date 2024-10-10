@@ -7,13 +7,13 @@ dotenv.config();
 // Database connection
 const {connection} = require("../config/config.db");
 
-// Register vote
 
+// Register vote
 const registerVote = (request, response) => {
-  const { user_id, thing_id, vote_value } = request.body;
+  const { user_id, thing_id, value } = request.body;
   connection.query(
     "INSERT INTO votes (user_id, thing_id, value) VALUES (?,?,?)",
-    [user_id, thing_id, vote_value],
+    [user_id, thing_id, value],
     (error, results) => {
       if (error) {
         if (error.code === 'ER_DUP_ENTRY') {
