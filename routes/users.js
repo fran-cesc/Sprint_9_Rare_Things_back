@@ -37,7 +37,6 @@ const getUserByMail = (request, response) => {
         if (results.length === 0) { 
           console.log('No user found for email:', email);
           return response.status(404)
-          .setHeader('Content-Type', 'application/json')
           .json({message: 'User not found'});
         }
         return response

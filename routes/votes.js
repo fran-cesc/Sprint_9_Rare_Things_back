@@ -39,13 +39,13 @@ const getVoted = (request, response) => {
   const { user_id, thing_id } = request.query;
 
   connection.query(
-    "SELECT COALESCE(value_voted, 0) AS value_voted FROM votes WHERE user_id = ? AND thing_id = ?",
+    "SELECT COALESCE(value, 0) AS value FROM votes WHERE user_id = ? AND thing_id = ?",
     [user_id, thing_id],
     (error, results) => {
         if (error) {        
-            return response.status(500).json({ error: " Server Error. Could not retrieve if user has voted" });
+            return response.status(500).json({ error: " Server Error. Could not retrieve if user has voted", error });
         }
-        const valueVoted = results[0] ? results[0].value_voted : 0;
+        const valueVoted = results[0] ? results[0].value : 0;
         response.json(valueVoted);
     }
   );
