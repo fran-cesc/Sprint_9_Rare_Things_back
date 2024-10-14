@@ -35,9 +35,8 @@ const getUserByMail = (request, response) => {
             return response.status(500).json({ error: " Server Error. Could not retrieve user" });
         }
         if (results.length === 0) { 
-          console.log('No user found for email:', email);
           return response.status(404)
-          .json({message: 'User not found'});
+          .json([{message: 'User not found'}]);
         }
         return response
         .status(200)
