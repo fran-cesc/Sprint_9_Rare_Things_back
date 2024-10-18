@@ -33,7 +33,7 @@ const registerVote = (request, response) => {
 app.route("/vote").post(registerVote);
 
 
-// Verify if an user has voted a thing and return the value voted
+// Verify if an user has voted a thing and return the value voted (1, -1) or 0 if hasn't voted.
 const getVoted = (request, response) => {
     
   const { user_id, thing_id } = request.query;

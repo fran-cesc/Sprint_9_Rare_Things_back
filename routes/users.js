@@ -85,6 +85,7 @@ const registerUser = (request, response) => {
     [user_name, email, password],
     (error, results) => {
       if (error) {
+        console.log(error);
         return response.status(500).json({ error: " Server Error. User could not be registered" });
       }
       return response
