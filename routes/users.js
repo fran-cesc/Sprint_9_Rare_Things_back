@@ -65,7 +65,6 @@ const getUserById = (request, response) => {
           return response.status(404)
           .json({message: 'User not found'});
         }
-        console.log('User found:', results[0]);
         return response
         .status(200)
         .json(results[0]);
