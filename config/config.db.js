@@ -3,11 +3,11 @@ let connection;
 
 try {
     connection = mysql.createConnection({
-        host: process.env.MYSQLHOST,           // Host proporcionado por Railway
-        user: process.env.MYSQLUSER,           // Usuario proporcionado por Railway
-        password: process.env.MYSQLPASSWORD,   // Contraseña proporcionada por Railway
-        database: process.env.MYSQLDATABASE,   // Nombre de la base de datos proporcionado por Railway
-        port: process.env.MYSQLPORT || 3306,   // Puerto proporcionado por Railway o 3306 por defecto
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        port: process.env.DB_PORT || 3306,
     });
 } catch (error) {
     console.log("Error connecting to the database:", error);
