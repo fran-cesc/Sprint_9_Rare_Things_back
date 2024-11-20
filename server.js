@@ -33,14 +33,14 @@ app.listen(process.env.PORT || 10000, () => {
     console.log(`Server running at port ${process.env.PORT || 10000}`);
 });
 
-// Auto-ping every 5 min to keep server awake
+// Auto-ping every 10 min to keep server awake
 setInterval(()=> {
 https.get(API_URL, (resp) => {
     console.log(`self-ping status: ${resp.statusCode}`);
 }).on('error', (error) => {
     console.error('self-ping failed', error.message);
 });
-}, 5*60*1000);
+}, 10*60*1000);
 
 
 module.exports = app;
