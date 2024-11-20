@@ -145,4 +145,32 @@ const updateVotes = (request, response) => {
 // Route
 app.route("/things/updatevotes").post(updateVotes);
 
+
+// Get the 3 more recent things in upload order (last uploaded first)
+const getRecentThings = (request, response) => {
+  connection.query("SELECT * FROM things ORDER BY date DESC LIMIT 3 ", (error, results) => {
+    if (error) {        
+        return response.status(500).json({ error: " Server Error. Could not retrieve recent things" });
+    }
+    response.status(200).json(results);
+  });
+};
+
+// Route
+app.route("/things/recent").get(getRecentThings);
+
+// Get the 3 more voted things (more voted first)
+
+const getMostVotedThings= (request, response) => {
+  connection.query("SELECT * FROM things ORDER BY votes DESC LIMIT 3 ", (error, results) => {
+    if (error) {        
+        return response.status(500).json({ error: " Server Error. Could not retrieve most voted things" });
+    }
+    response.status(200).json(results);
+  });
+};
+
+// Route
+app.route("/things/mostvoted").get(getMostVotedThings);
+
 module.exports = app;
