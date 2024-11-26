@@ -9,13 +9,12 @@ dotenv.config();
 const upload = multer({ dest: "img_uploads/" });
 
 // Database connection
-const {connection} = require("../config/config.db");
-
+const { dbQuery } = require("../config/config.db");
 
 
 // Get the 3 more recent things in upload order (last uploaded first)
 const getRecentThings = (request, response) => {
-  connection.query("SELECT * FROM things ORDER BY date DESC LIMIT 3", (error, results) => {
+  dbQuery("SELECT * FROM things ORDER BY date DESC LIMIT 3", [], (error, results) => {
     if (error) {        
         return response.status(500).json({ error: " Server Error. Could not retrieve recent things" });
     }
@@ -30,7 +29,7 @@ app.route("/things/recent").get(getRecentThings);
 // Get the 3 most voted things (most voted first)
 
 const getMostVotedThings= (request, response) => {
-  connection.query("SELECT * FROM things ORDER BY votes DESC LIMIT 3", (error, results) => {
+  dbQuery("SELECT * FROM things ORDER BY votes DESC LIMIT 3", [], (error, results) => {
     if (error) {        
         return response.status(500).json({ error: " Server Error. Could not retrieve most voted things" });
     }
@@ -45,7 +44,7 @@ app.route("/things/mostvoted").get(getMostVotedThings);
 // Get thing by Id
 const getThingById = (request, response) => {
   const id = request.params.id;
-  connection.query(
+  dbQuery(
     "SELECT * from things where thing_id = ?",
     [id],
     (error, results) => {
@@ -70,7 +69,7 @@ app.route("/things/:id").get(getThingById);
 
 const getAllThingsFromUser = (request, response) => {
   const id = request.params.id;
-  connection.query(
+  dbQuery(
     "SELECT * from things where user_id = ?",
     [id],
     (error, results) => {
@@ -93,7 +92,7 @@ app.route("/things/user/:id").get(getAllThingsFromUser);
 
 // Get all things
 const getAllThings = (request, response) => {
-  connection.query("SELECT * FROM things", (error, results) => {
+  dbQuery("SELECT * FROM things", (error, results) => {
     if (error) {        
         return response.status(500).json({ error: " Server Error. Could not retrieve all things" });
     }
@@ -110,7 +109,7 @@ const postThing = (request, response) => {
   const { user_id, user_name, thing_title, location, category} = request.body;
   saveImage(request.file);
   const imgName = request.file.originalname;
-  connection.query(
+  dbQuery(
     "INSERT INTO things(user_id, user_name, img_name, thing_title, location, category) VALUES (?,?,?,?,?,?)",
     [user_id, user_name, imgName, thing_title, location, category],
     (error, results) => {
@@ -136,7 +135,7 @@ app.route("/things").post(upload.single("image"), postThing);
 // Delete thing
 // const delThing = (request, response) => {
 //   const id = request.params.id;
-//   connection.query(
+//   dbQuery(
 //     "Delete from things where id = ?",
 //     [id],
 //     (error, results) => {
@@ -157,7 +156,7 @@ app.route("/things").post(upload.single("image"), postThing);
 // Update votes
 const updateVotes = (request, response) => {
   const { thing_id, votevalue } = request.body;
-  connection.query(
+  dbQuery(
     "UPDATE things SET votes = votes + ? WHERE thing_id = ?",
     [votevalue, thing_id],
     (error, results) => {

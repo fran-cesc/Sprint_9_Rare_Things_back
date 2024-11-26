@@ -6,13 +6,13 @@ dotenv.config();
 
 
 // Database connection
-const {connection} = require("../config/config.db");
+const { dbQuery } = require("../config/config.db");
 
 //TODO encrypt passwords
 
 // Get all users
 const getAllUsers = (request, response) => {
-  connection.query("SELECT * FROM users", (error, results) => {
+  dbQuery("SELECT * FROM users", (error, results) => {
     if (error) {        
         return response.status(500).json({ error: " Server Error. Could not retrieve all users" });
     }
@@ -27,7 +27,7 @@ app.route("/users").get(getAllUsers);
 // Get user by user_mail
 const getUserByMail = (request, response) => {
   const email = request.params.email;
-  connection.query(
+  dbQuery(
     "SELECT * from users WHERE email = ?",
     [email],
     (error, results) => {
@@ -54,7 +54,7 @@ const getUserById = (request, response) => {
 
   const user_id = request.params.id;
 
-  connection.query(
+  dbQuery(
     "SELECT * from users WHERE user_id = ?",
     [user_id],
     (error, results) => {
@@ -79,7 +79,7 @@ app.route("/users/id/:id").get(getUserById);
 // Register user
 const registerUser = (request, response) => {
   const { user_name, email, password } = request.body;
-  connection.query(
+  dbQuery(
     "INSERT INTO users (user_name, email, password) VALUES (?,?,?)",
     [user_name, email, password],
     (error, results) => {
@@ -100,7 +100,7 @@ app.route("/register").post(registerUser);
 // User login
 const logUser = (request, response) => {
   const { email, password } = request.body;
-  connection.query(
+  dbQuery(
     "SELECT user_id, user_name, email, password from users where email=?",
     [email],
     (error, results) => {
