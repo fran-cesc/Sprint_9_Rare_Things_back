@@ -41,15 +41,15 @@ app.listen(port, () => {
 
 
 // Auto-ping every 10 min to keep server awake
-if (process.env.ENABLE_SELF_PING === 'true') {
-    setInterval(() => {
-        https.get(API_URL, (resp) => {
-            console.log(`self-ping status: ${resp.statusCode}`);
-        }).on('error', (error) => {
-            console.error('self-ping failed', error.message);
-        });
-    }, 10 * 60 * 1000);
-}
+// if (process.env.ENABLE_SELF_PING === 'true') {
+//     setInterval(() => {
+//         https.get(API_URL, (resp) => {
+//             console.log(`self-ping status: ${resp.statusCode}`);
+//         }).on('error', (error) => {
+//             console.error('self-ping failed', error.message);
+//         });
+//     }, 10 * 60 * 1000);
+// }
 
 
 module.exports = app;
