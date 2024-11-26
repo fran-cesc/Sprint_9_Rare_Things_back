@@ -15,7 +15,6 @@ const {connection} = require("../config/config.db");
 
 // Get the 3 more recent things in upload order (last uploaded first)
 const getRecentThings = (request, response) => {
-  console.log('request: ', request);
   connection.query("SELECT * FROM things ORDER BY date DESC LIMIT 3", (error, results) => {
     if (error) {        
         return response.status(500).json({ error: " Server Error. Could not retrieve recent things" });
