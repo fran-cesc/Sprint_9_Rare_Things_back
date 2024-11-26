@@ -5,13 +5,13 @@ dotenv.config();
 
 
 // Database connection
-const {connection} = require("../config/config.db");
+const { dbQuery } = require("../config/config.db");
 
 
 // Register comment
 const registerComment = (request, response) => {
   const { thing_id, user_id, comment } = request.body;
-  connection.query(
+  dbQuery(
     "INSERT INTO comments (thing_id, user_id, comment ) VALUES (?,?,?)",
     [thing_id, user_id, comment],
     (error, results) => {
@@ -33,7 +33,7 @@ app.route("/comments").post(registerComment);
 // Get comments by thing_id
 const getCommentsByThingId = (request, response) => {
     const id = request.params.id;
-    connection.query(
+    dbQuery(
       "SELECT comments.*, users.user_name FROM comments JOIN users ON comments.user_id = users.user_id WHERE thing_id = ? ORDER BY comments.date DESC",
       [id],
       (error, results) => {
@@ -57,7 +57,7 @@ const getCommentsByThingId = (request, response) => {
 // Get comments by user_id
 const getCommentsByUserId = (request, response) => {
     const id = request.params.id;
-    connection.query(
+    dbQuery(
       "SELECT * from comments WHERE user_id = ?",
       [id],
       (error, results) => {

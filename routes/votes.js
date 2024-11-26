@@ -5,13 +5,13 @@ dotenv.config();
 
 
 // Database connection
-const {connection} = require("../config/config.db");
+const { dbQuery } = require("../config/config.db");
 
 
 // Register vote
 const registerVote = (request, response) => {
   const { user_id, thing_id, value } = request.body;
-  connection.query(
+  dbQuery(
     "INSERT INTO votes (user_id, thing_id, value) VALUES (?,?,?)",
     [user_id, thing_id, value],
     (error, results) => {
@@ -38,7 +38,7 @@ const getVoted = (request, response) => {
     
   const { user_id, thing_id } = request.query;
 
-  connection.query(
+  dbQuery(
     "SELECT COALESCE(value, 0) AS value FROM votes WHERE user_id = ? AND thing_id = ?",
     [user_id, thing_id],
     (error, results) => {
