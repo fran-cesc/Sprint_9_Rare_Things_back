@@ -4,7 +4,7 @@ let connection;
 
 try {
 
-    // CLEVER CLOUD setup connection
+    // Setup connection
     connection = mysql.createConnection({
         host: process.env.MYSQL_ADDON_HOST,
         user: process.env.MYSQL_ADDON_USER,
@@ -22,14 +22,6 @@ try {
             console.log("Database connected successfully.");
         }
     });
-
-    //LOCALHOST
-    // connection = mysql.createConnection({
-    //     host: process.env.DBHOST,
-    //     user: process.env.DBUSER,
-    //     password: process.env.DBPASS,
-    //     database: process.env.DBNAME
-    // });
 
 } catch (error) {
     console.log("Error connecting to the database:", error);
