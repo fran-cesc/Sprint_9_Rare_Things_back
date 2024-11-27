@@ -29,6 +29,7 @@ app.use(require('./routes/users'));
 app.use(require('./routes/things'));
 app.use(require('./routes/votes'));
 app.use(require('./routes/comments'));
+app.use(require('./routes/images'));
 
 // Image static server
 app.use(express.static('img_uploads'));
