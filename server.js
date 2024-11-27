@@ -10,12 +10,7 @@ const app = express();
 const API_URL = process.env.API_URL || 'https://rare-things-back.onrender.com/things';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://rare-things.vercel.app';
 
-const { Storage } = require('@google-cloud/storage');
 
-const credentials = JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS_JSON);
-const storage = new Storage({
-  credentials
-});
 
 // CORS middleware
 app.use(cors({
