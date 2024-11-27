@@ -122,6 +122,7 @@ const postThing = async (request, response) => {
   }
   try{
     const imgName = await uploadFileToGCS(request.file.buffer, request.file.originalname);
+    console.log("imgName: ", imgName);
     dbQuery(
       "INSERT INTO things(user_id, user_name, img_name, thing_title, location, category) VALUES (?,?,?,?,?,?)",
       [user_id, user_name, imgName, thing_title, location, category],
@@ -144,17 +145,22 @@ const postThing = async (request, response) => {
 async function uploadFileToGCS(fileBuffer, destinationFilename) {
   const file = bucket.file(destinationFilename);
 
-  const [fileResponse] = await file.save(fileBuffer, {
-      gzip: true, 
-      metadata: {
-          cacheControl: 'public, max-age=31536000', 
-      },
-  });
+  try {
+    await file.save(fileBuffer, {
+        gzip: true, 
+        metadata: {
+            cacheControl: 'public, max-age=31536000', 
+        },
+    });
+    console.log('Uploaded file:', destinationFilename);
 
-  console.log('Uploaded to', fileResponse.selfLink);
-
-  return `https://storage.googleapis.com/${process.env.GCS_BUCKET_NAME}/${destinationFilename}`;
+    return `https://storage.googleapis.com/${process.env.GCS_BUCKET_NAME}/${destinationFilename}`;
+  } catch (error) {
+    console.error('Failed to upload to Google Cloud Storage:', error);
+    throw error;  // Rethrow to handle it in the calling function
+  }
 }
+
 
 // Route
 app.route("/things").post(upload.single("image"), postThing);
