@@ -52,10 +52,10 @@ app.route("/things/mostvoted").get(getMostVotedThings);
 
 // Get thing by Id
 const getThingById = (request, response) => {
-  const id = request.params.id;
+  const thing_id = request.params.id;
   dbQuery(
     "SELECT * from things where thing_id = ?",
-    [id],
+    [thing_id],
     (error, results) => {
         if (error) {        
             return response.status(500).json({ error: " Server Error. Could not retrieve thing" });
@@ -77,10 +77,10 @@ app.route("/things/:id").get(getThingById);
 // Get all things from a user by user_id
 
 const getAllThingsFromUser = (request, response) => {
-  const id = request.params.id;
+  const thing_id = request.params.id;
   dbQuery(
     "SELECT * from things where user_id = ?",
-    [id],
+    [thing_id],
     (error, results) => {
         if (error) {        
             return response.status(500).json({ error: " Server Error. Could not retrieve thing" });
@@ -186,7 +186,7 @@ app.route("/things").post(upload.single("image"), postThing);
 // app.route("/things/:id").delete(delThing);
 
 
-// Update votes
+// Update votes (returns votes updated thing)
 const updateVotes = (request, response) => {
   const { thing_id, votevalue } = request.body;
   dbQuery(
@@ -196,11 +196,23 @@ const updateVotes = (request, response) => {
         if (error) {        
             return response.status(500).json({ error: " Server Error. Could not update votes" });
         }
-        response
-        .status(200)
-        .json({ "Votes updated successfuly": results.affectedRows });
+        dbQuery(
+          "SELECT * from things where thing_id = ?",
+          [thing_id],
+          (error, results) => {
+            if (error) {
+              return response.status(500).json({ error: "Server Error. Could not retrieve vote updated thing" });
+            }
+            if (results.length > 0) {
+              // Send back the updated thing
+              response.status(200).json(results[0]);
+            } else {
+              response.status(404).json({ error: "No such thing found to update votes" });
+            }
 
-    }
+          }
+        );
+      }
   );
 }
 

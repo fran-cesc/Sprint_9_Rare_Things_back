@@ -41,7 +41,6 @@ const getCommentsByThingId = (request, response) => {
               return response.status(500).json({ error: " Server Error. Could not retrieve comments" });
           }
           if (results.length === 0) { 
-            console.log('There are no comments for this Thing');
             return response.status(200).json(results);
           }
           return response

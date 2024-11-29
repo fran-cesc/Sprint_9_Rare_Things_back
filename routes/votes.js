@@ -52,7 +52,7 @@ const getVoted = (request, response) => {
 }
   
   // Route
-  app.route("/hasvoted").get(getVoted);
+  app.route("/hasUservotedThisThing").get(getVoted);
 
 
 
