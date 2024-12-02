@@ -15,7 +15,7 @@ const pool = mysql.createPool({
 function dbQuery(query, params, callback) {
     pool.query(query, params, (error, results, fields) => {
         if (error) {
-            console.error('Database query error:', error);
+            console.error('Database query error: ', error.code);
             // Optionally, handle specific errors based on `error.code` here
         }
         callback(error, results);

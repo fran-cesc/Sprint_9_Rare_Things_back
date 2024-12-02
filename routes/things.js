@@ -122,7 +122,6 @@ const postThing = async (request, response) => {
   }
   try{
     const imgName = await uploadFileToGCS(request.file.buffer, request.file.originalname);
-    console.log("imgName: ", imgName);
     dbQuery(
       "INSERT INTO things(user_id, user_name, img_name, thing_title, location, category) VALUES (?,?,?,?,?,?)",
       [user_id, user_name, imgName, thing_title, location, category],
@@ -152,7 +151,6 @@ async function uploadFileToGCS(fileBuffer, destinationFilename) {
             cacheControl: 'public, max-age=31536000', 
         },
     });
-    console.log('Uploaded file:', destinationFilename);
 
     return `https://storage.googleapis.com/${process.env.GCS_BUCKET_NAME}/${destinationFilename}`;
   } catch (error) {
@@ -190,7 +188,7 @@ app.route("/things").post(upload.single("image"), postThing);
 const updateVotes = (request, response) => {
   const { thing_id, votevalue } = request.body;
   dbQuery(
-    "UPDATE things SET votes = votes + ? WHERE thing_id = ?",
+    "UPDATE things SET votes = ? WHERE thing_id = ?",
     [votevalue, thing_id],
     (error, results) => {
         if (error) {        
