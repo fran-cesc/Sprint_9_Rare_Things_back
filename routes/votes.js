@@ -17,7 +17,19 @@ const registerVote = (request, response) => {
     (error, results) => {
       if (error) {
         if (error.code === 'ER_DUP_ENTRY') {
-          return response.status(400).json({ error: "User has already voted for this thing" });
+          dbQuery(
+            "UPDATE votes SET value = ? WHERE user_id = ? AND thing_id = ?",
+            [user_id, thing_id, value],
+            (error, results) => {
+              if (error){
+                console.error("Error updating vote:", error);
+                return response.status(500).json({ error: "Server Error. Vote could not be updated" });
+              }
+              else return response
+              .status(201)
+              .json({ message: "Vote updated successfully", results});
+            }
+          )
         } else {
           console.error("Error registering vote:", error);
           return response.status(500).json({ error: "Server Error. Vote could not be registered" });
@@ -34,7 +46,7 @@ app.route("/vote").post(registerVote);
 
 
 // Verify if an user has voted a thing and return the value voted (1, -1) or 0 if hasn't voted.
-const getVoted = (request, response) => {
+const hasUserVotedThing = (request, response) => {
     
   const { user_id, thing_id } = request.query;
 
@@ -52,7 +64,7 @@ const getVoted = (request, response) => {
 }
   
   // Route
-  app.route("/hasUservotedThisThing").get(getVoted);
+  app.route("/hasUservotedThisThing").get(hasUserVotedThing);
 
 
 

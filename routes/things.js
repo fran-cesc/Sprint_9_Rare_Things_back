@@ -190,7 +190,7 @@ app.route("/things").post(upload.single("image"), postThing);
 const updateVotes = (request, response) => {
   const { thing_id, votevalue } = request.body;
   dbQuery(
-    "UPDATE things SET votes = votes + ? WHERE thing_id = ?",
+    "UPDATE things SET votes = ? WHERE thing_id = ?",
     [votevalue, thing_id],
     (error, results) => {
         if (error) {        
