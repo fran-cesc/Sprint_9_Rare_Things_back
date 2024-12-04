@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
+const { authenticateToken } = require('../middleware/authMiddleware');
 
 
 // Database connection
@@ -75,7 +76,7 @@ const getCommentsByUserId = (request, response) => {
   }
   
   // Route
-  app.route("/comments/user/:id").get(getCommentsByUserId);
+  app.route("/comments/user/:id").get(authenticateToken, getCommentsByUserId);
 
 
 module.exports = app;

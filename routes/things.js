@@ -2,9 +2,9 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("node:fs");
 const dotenv = require("dotenv");
-
 const app = express();
 dotenv.config();
+const { authenticateToken } = require('../middleware/authMiddleware');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -96,7 +96,7 @@ const getAllThingsFromUser = (request, response) => {
 }
 
 // Route
-app.route("/things/user/:id").get(getAllThingsFromUser);
+app.route("/things/user/:id").get(authenticateToken, getAllThingsFromUser);
 
 
 // Get all things
