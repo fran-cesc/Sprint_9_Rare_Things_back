@@ -36,7 +36,6 @@ app.route("/things/recent").get(getRecentThings);
 
 
 // Get the 3 most voted things (most voted first)
-
 const getMostVotedThings= (request, response) => {
   dbQuery("SELECT * FROM things ORDER BY votes DESC LIMIT 3", [], (error, results) => {
     if (error) {        
@@ -50,32 +49,56 @@ const getMostVotedThings= (request, response) => {
 app.route("/things/mostvoted").get(getMostVotedThings);
 
 
-// Get thing by Id
+// Get thing by Id and sync total votes
 const getThingById = (request, response) => {
   const thing_id = request.params.id;
+  // Step 1: calculate total votes for this thing
   dbQuery(
-    "SELECT * from things where thing_id = ?",
+    "SELECT SUM(value) AS totalVotes FROM votes WHERE thing_id = ?",
     [thing_id],
     (error, results) => {
-        if (error) {        
-            return response.status(500).json({ error: " Server Error. Could not retrieve thing" });
+      if (error) {
+        return response.status(500).json({ error: "Server Error. Could not calculate total votes" });
+      }
+
+      const totalVotes = results[0].totalVotes || 0;
+
+      // Step 2: update votes in things table
+      dbQuery(
+        "UPDATE things SET votes = ? WHERE thing_id = ?",
+        [totalVotes, thing_id],
+        (error) => {
+          if (error) {
+            return response.status(500).json({ error: "Server Error. Could not update total votes" });
+          }
+
+          // Step 3: Return updated thing
+          dbQuery(
+            "SELECT * FROM things WHERE thing_id = ?",
+            [thing_id],
+            (error, results) => {
+              if (error) {
+                return response.status(500).json({ error: "Server Error. Could not retrieve thing" });
+              }
+
+              if (results.length === 0) {
+                return response.status(404).json({ error: "Thing not found" });
+              }
+
+              response.status(200).json(results[0]);
+            }
+          );
         }
-        if (results.length === 0) { 
-          return response.status(404).json({ error: "Thing not found" });
-        }
-        response
-        .status(200)
-        .json(results[0]);
+      );
     }
   );
-}
+};
 
 // Route
 app.route("/things/:id").get(getThingById);
 
 
 // Get all things from a user by user_id
-
 const getAllThingsFromUser = (request, response) => {
   const thing_id = request.params.id;
   dbQuery(
@@ -186,33 +209,48 @@ app.route("/things").post(upload.single("image"), postThing);
 
 // Update votes (returns votes updated thing)
 const updateVotes = (request, response) => {
-  const { thing_id, votevalue } = request.body;
-  dbQuery(
-    "UPDATE things SET votes = ? WHERE thing_id = ?",
-    [votevalue, thing_id],
-    (error, results) => {
-        if (error) {        
-            return response.status(500).json({ error: " Server Error. Could not update votes" });
-        }
-        dbQuery(
-          "SELECT * from things where thing_id = ?",
-          [thing_id],
-          (error, results) => {
-            if (error) {
-              return response.status(500).json({ error: "Server Error. Could not retrieve vote updated thing" });
-            }
-            if (results.length > 0) {
-              // Send back the updated thing
-              response.status(200).json(results[0]);
-            } else {
-              response.status(404).json({ error: "No such thing found to update votes" });
-            }
+  const { thing_id } = request.body;
 
-          }
-        );
+  // Sum all vote values for this thing
+  dbQuery(
+    "SELECT SUM(value) AS totalVotes FROM votes WHERE thing_id = ?",
+    [thing_id],
+    (error, results) => {
+      if (error) {
+        return response.status(500).json({ error: "Server Error. Could not calculate total votes" });
       }
+
+      const totalVotes = results[0].totalVotes || 0;
+
+      // Update the thing with the totalVotes
+      dbQuery(
+        "UPDATE things SET votes = ? WHERE thing_id = ?",
+        [totalVotes, thing_id],
+        (error, updateResult) => {
+          if (error) {
+            return response.status(500).json({ error: "Server Error. Could not update total votes" });
+          }
+
+          // Return the updated thing
+          dbQuery(
+            "SELECT * FROM things WHERE thing_id = ?",
+            [thing_id],
+            (error, finalResults) => {
+              if (error) {
+                return response.status(500).json({ error: "Server Error. Could not retrieve updated thing" });
+              }
+              if (finalResults.length > 0) {
+                response.status(200).json(finalResults[0]);
+              } else {
+                response.status(404).json({ error: "Thing not found after vote update" });
+              }
+            }
+          );
+        }
+      );
+    }
   );
-}
+};
 
 // Route
 app.route("/things/updatevotes").post(updateVotes);
