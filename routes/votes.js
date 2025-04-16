@@ -19,7 +19,7 @@ const registerVote = (request, response) => {
         if (error.code === 'ER_DUP_ENTRY') {
           dbQuery(
             "UPDATE votes SET value = ? WHERE user_id = ? AND thing_id = ?",
-            [user_id, thing_id, value],
+            [value, user_id, thing_id],
             (error, results) => {
               if (error){
                 console.error("Error updating vote:", error);
